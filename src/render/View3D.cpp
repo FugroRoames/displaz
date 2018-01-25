@@ -690,6 +690,46 @@ void View3D::keyPressEvent(QKeyEvent *event)
     {
         m_selectionClassTo = 9;
     }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_0)
+    {
+        m_selectionClassTo = 10;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_1)
+    {
+        m_selectionClassTo = 11;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_2)
+    {
+        m_selectionClassTo = 12;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_3)
+    {
+        m_selectionClassTo = 13;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_4)
+    {
+        m_selectionClassTo = 14;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_5)
+    {
+        m_selectionClassTo = 15;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_6)
+    {
+        m_selectionClassTo = 16;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_7)
+    {
+        m_selectionClassTo = 17;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_8)
+    {
+        m_selectionClassTo = 18;
+    }
+    else if(event->key() == Qt::Key_Alt && Qt::Key_9)
+    {
+        m_selectionClassTo = 19;
+    }
     else if(event->key() == Qt::Key_S && (event->modifiers() & Qt::ControlModifier))
     {
         // Horrible dirty hack to save out points to files

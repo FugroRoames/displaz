@@ -73,18 +73,18 @@ void main()
         // Colour according to some common classifications defined in the LAS spec
         vec3 classColor = vec3(1.0, 0.0, 1.0);
         if      (classification == 0) classColor = vec3(0.0, 0.0,  0.0);
-        else if (classification == 1) classColor = vec3(0.36, 0.7,  0.0);
+        else if (classification == 1) classColor = vec3(0.4, 1.0,  0.0);
         else if (classification == 2) classColor = vec3(0.33, 0.18, 0.0);
         else if (classification == 3) classColor = vec3(1.0,  0.0,  0.0);
         else if (classification == 4) classColor = vec3(0.0,  1.0,  1.0);
         else if (classification == 5) classColor = vec3(0.0,  0.0,  1.0);
         else if (classification == 6) classColor = vec3(1.0,  1.0,  0.0);
-        else if (classification == 7) classColor = vec3(0.0,  0.5,  1.0);
+        else if (classification == 7) classColor = vec3(0.9,  .56,  .9);
         else if (classification == 8) classColor = vec3(1.0,  0.5,  0.0);
         else if (classification == 9) classColor = vec3(1.0, 0.0,  1.0);
-        else if (classification == 10) classColor = vec3(0.1,  0.4,  0.7);
-        else if (classification == 11) classColor = vec3(0.7,  0.4,  0.1);
-        else if (classification == 12) classColor = vec3(0.4,  0.1,  0.7);
+        else if (classification == 10) classColor = vec3(1.0,  1.0,  1.0);
+        else if (classification == 11) classColor = vec3(0.4,  0.4,  0.7);
+        else if (classification == 12) classColor = vec3(0.5,  0.5,  0.5);
 
         pointColor = classColor +
                      vec3(0,0,float(rr<selectionRadius)) +

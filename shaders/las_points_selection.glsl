@@ -72,23 +72,50 @@ void main()
     {
         // Colour according to some common classifications defined in the LAS spec
         vec3 classColor = vec3(1.0, 0.0, 1.0);
-        if      (classification == 0) classColor = vec3(0.0, 0.0,  0.0);
-        else if (classification == 1) classColor = vec3(0.4, 1.0,  0.0);
-        else if (classification == 2) classColor = vec3(0.33, 0.18, 0.0);
-        else if (classification == 3) classColor = vec3(1.0,  0.0,  0.0);
-        else if (classification == 4) classColor = vec3(0.0,  1.0,  1.0);
-        else if (classification == 5) classColor = vec3(0.0,  0.0,  1.0);
-        else if (classification == 6) classColor = vec3(1.0,  1.0,  0.0);
-        else if (classification == 7) classColor = vec3(0.9,  .56,  .9);
-        else if (classification == 8) classColor = vec3(1.0,  0.5,  0.0);
-        else if (classification == 9) classColor = vec3(1.0, 0.0,  1.0);
-        else if (classification == 10) classColor = vec3(1.0,  1.0,  1.0);
-        else if (classification == 11) classColor = vec3(0.4,  0.4,  0.7);
-        else if (classification == 12) classColor = vec3(0.5,  0.5,  0.5);
+        if      (classification == 0) classColor = vec3(0.0, 0.0,  0.0);  // other
+        else if (classification == 1) classColor = vec3(0.4, 0.6,  0.24); // vegetation
+        else if (classification == 2) classColor = vec3(0.33, 0.18,0.0);  // ground
+        else if (classification == 3) classColor = vec3(1.0,  0.0, 0.0);  // catenary
+        else if (classification == 4) classColor = vec3(0.04, 0.25,1.0);  // pole
+        else if (classification == 5) classColor = vec3(0.0,  0.0, 0.2);  // road
+        else if (classification == 6) classColor = vec3(1.0,  0.1, 0.0);  // vehicle
+        else if (classification == 7) classColor = vec3(0.9,  0.56,0.9);  // building
+        else if (classification == 8) classColor = vec3(1.0,  0.5, 0.0);  // fence
+        else if (classification == 9) classColor = vec3(0.56, 0.37,0.93); // unknown catenary
+        else if (classification == 10) classColor = vec3(0.37,0.55,0.99); // unknown pole
+        else if (classification == 11) classColor = vec3(0.93,0.37,0.93); // tower
+        else if (classification == 12) classColor = vec3(0.37,0.93,0.93); // unknown tower
+        else if (classification == 13) classColor = vec3(0.37,0.93,0.37); // stay
+        else if (classification == 14) classColor = vec3(0.32,0.09,0.10); // poletop other
+        else if (classification == 15) classColor = vec3(1.0, 0.65,0.37); // crossarm
+        else if (classification == 16) classColor = vec3(1.0, 1.0, 0.0);  // street light
+        else if (classification == 17) classColor = vec3(0.17,0.93,0.93); // traffic light
+        else if (classification == 18) classColor = vec3(1.0, 0.37,1.0);  // signs
 
-        pointColor = classColor +
-                     vec3(0,0,float(rr<selectionRadius)) +
-                     tonemap(intensity/400.0, exposure, contrast) * vec3(1);
+        if (classification == 14 ||
+	   classification == 15 ||
+	   classification == 16 ||
+	   classification == 17 ||
+	   classification == 18)
+        {
+            // without intensity
+	   pointColor = classColor +
+                vec3(0,0,float(rr<selectionRadius));
+        }
+        else if (classification == 7)
+        {
+	   // make building intensity less white
+            pointColor = classColor +
+                vec3(0,0,float(rr<selectionRadius)) +
+                tonemap(intensity/800.0, exposure, contrast) * vec3(1);
+        }
+        else
+        {
+            // with intensity
+            pointColor = classColor +
+                vec3(0,0,float(rr<selectionRadius)) +
+                tonemap(intensity/550.0, exposure, contrast) * vec3(1);
+	}
     }
     else if (colorMode == 1)
         pointColor = contrast*(exposure*color - vec3(0.5)) + vec3(0.5);

@@ -106,7 +106,7 @@ void main()
         {
 	   // make building intensity less white
             pointColor = classColor +
-                vec3(0,0,float(rr<selectionRadius)) +
+                vec3(-0.5*float(rr<selectionRadius),0,0) +
                 tonemap(intensity/800.0, exposure, contrast) * vec3(1);
         }
         else

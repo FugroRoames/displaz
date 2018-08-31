@@ -394,67 +394,67 @@ bool PointArray::loadFile(QString fileName, size_t maxPointCount)
     return true;
 }
 
+void PointArray::checkAttributeAndWrite(std::ofstream & out, int attributeIdx, std::string attributeName, QString fileName)
+{
+    if (attributeIdx < 0)
+    {
+        g_logger.warning("No %s attribute in file %s", attributeName, this->fileName());
+    } 
+    else
+    {
+        tfm::format(out, "%s", attributeName);
+    }
+    return; 
+}
 
+// Save classified points and attributes to a txt file with a header
 void PointArray::saveFile(QString fileName)
 {
-    for (size_t j = 0; j < m_fields.size(); ++j)
-    {
-        tfm::format(std::cerr, "Name: %s \n", m_fields[j].name);
-        tfm::format(std::cerr, "Type: %s \n", m_fields[j].spec.type);
-        tfm::format(std::cerr, "elsize: %s \n", m_fields[j].spec.elsize);
-        tfm::format(std::cerr, "count: %s \n", m_fields[j].spec.count);
-        tfm::format(std::cerr, "Semantic: %s \n", m_fields[j].spec.semantics);
-        tfm::format(std::cerr, "fixedpoint: %s \n", m_fields[j].spec.fixedPoint);
-    }
+    tfm::format(std::cerr, "Saving to file %s\n", fileName);
 
+    V3d off = offset();
+    std::ofstream out(fileName.toStdString());
+
+    // Write header first
+    tfm::format(out, "posx posy posz "); 
+    
     int classificationIdx = findField("classification", TypeSpec::uint8_i());
-    if (classificationIdx < 0)
-    {
-        g_logger.error("No classification attribute in file %s", this->fileName());
-        return;
-    }
-    int numberOfReturnsIdx = findField("numberOfReturns", TypeSpec::uint8_i());
-    if (numberOfReturnsIdx < 0)
-    {
-        g_logger.error("No numberOfReturns attribute in file %s", this->fileName());
-        return;
-    }
-    int returnNumberIdx = findField("returnNumber", TypeSpec::uint8_i());
-    if (returnNumberIdx < 0)
-    {
-        g_logger.error("No returnNumber attribute in file %s", this->fileName());
-        return;
-    }
-    int intensityIdx = findField("intensity", TypeSpec::uint16_i());
-    if (intensityIdx < 0)
-    {
-        g_logger.error("No intensity attribute in file %s", this->fileName());
-        return;
-    }
+    checkAttributeAndWrite(out, classificationIdx, "classification ", fileName);
+    
     int aglIdx = findField("agl", TypeSpec::float32());
-    if (aglIdx < 0)
-    {
-        g_logger.error("No agl attribute in file %s", this->fileName());
-        return;
-    }
+    checkAttributeAndWrite(out, aglIdx, "agl ", fileName);
+
+    int intensityIdx = findField("intensity", TypeSpec::uint16_i());
+    checkAttributeAndWrite(out, intensityIdx, "intensity ", fileName);
+    int returnNumberIdx = findField("returnNumber", TypeSpec::uint8_i());
+    checkAttributeAndWrite(out, returnNumberIdx, "returnNumber ", fileName);
+
+    int numberOfReturnsIdx = findField("numberOfReturns", TypeSpec::uint8_i());
+    checkAttributeAndWrite(out, numberOfReturnsIdx, "numberOfReturns ", fileName);
+
     int stringIdIdx = findField("stringId", TypeSpec::uint32_i());
-    if (stringIdIdx < 0)
-    {
-        g_logger.error("No stringId attribute in file %s", this->fileName());
-        return;
-    }
+    checkAttributeAndWrite(out, stringIdIdx, "stringId ", fileName);
+
     int pointSourceIdIdx = findField("pointSourceId", TypeSpec::uint16_i());
-    if (stringIdIdx < 0)
-    {
-        g_logger.error("No pointSourceIdIdx attribute in file %s", this->fileName());
-        return;
-    }
+    checkAttributeAndWrite(out, pointSourceIdIdx, "pointSourceId ", fileName);
+   
     int colorIdx = findField("color", TypeSpec::colorf32());
+    if (colorIdx < 0)
+    {
+        g_logger.warning("No color attribute in file %s", this->fileName());
+    } 
+    else
+    {
+        tfm::format(out, "colorx colory colorz");
+    }
     if (colorIdx == -1)
     {
-        g_logger.error("No color field found in file %s", this->fileName());
-        return;
+        g_logger.warning("No color field found in file %s", this->fileName());
     }
+
+    tfm::format(out, "\n");
+
+    // Get the data
     V3f* colors;
     colors = (V3f*)m_fields[colorIdx].as<float>();
 
@@ -466,23 +466,46 @@ void PointArray::saveFile(QString fileName)
     uint32_t* stringId = m_fields[stringIdIdx].as<uint32_t>();
     uint16_t* pointSourceId = m_fields[pointSourceIdIdx].as<uint16_t>();
 
-    // Hack: save classified points as XYZC
-    V3d off = offset();
-    std::ofstream out(fileName.toStdString());
-
-    // write header
-    tfm::format(out, "posx posy posz classification agl intensity returnNumber numberOfReturns stringId pointSourceId colorx colory colorz\n");
-
+    // Write data
     for (size_t i = 0; i < m_npoints; ++i)
     {
-        tfm::format(out, "%.3f %.3f %.3f %d %.3f %.3f %d %d %d %d %.3f %.3f %.3f\n",
-                    m_P[i].x + off.x, m_P[i].y + off.y, m_P[i].z + off.z,
-                    classification[i], agl[i], intensity[i], returnNumber[i],
-                    numberOfReturns[i], stringId[i], pointSourceId[i], colors[i].x, colors[i].y, colors[i].z);
+        tfm::format(out, "%.3f %.3f %.3f ", m_P[i].x + off.x, m_P[i].y + off.y, m_P[i].z + off.z);
+        if (classificationIdx != -1)
+        {   
+            tfm::format(out, "%d ", classification[i]);
+        } 
+        if (aglIdx != -1)
+        {   
+            tfm::format(out, "%d ", agl[i]);
+        } 
+        if (intensityIdx != -1)
+        {
+            tfm::format(out, "%d ", intensity[i]);
+        }
+        if (returnNumberIdx != -1)
+        {
+            tfm::format(out, "%d ", returnNumber[i]);
+        }
+        if (numberOfReturnsIdx != -1)
+        {
+            tfm::format(out, "%d ", numberOfReturns[i]);
+        }
+        if (stringIdIdx != -1)
+        {
+            tfm::format(out, "%d ", stringId[i]);
+        }
+        if (pointSourceIdIdx != -1)
+        {
+            tfm::format(out, "%d ", pointSourceId[i]);
+        }
+        if (colorIdx != -1)
+        {
+            tfm::format(out, "%.3f %.3f %.3f ", colors[i].x, colors[i].y, colors[i].z);
+        }
+        tfm::format(out, "\n");
     }
     g_logger.info("Saved classified points to file: %s", fileName);
 }
-
 
 void PointArray::mutate(std::shared_ptr<GeometryMutator> mutator)
 {

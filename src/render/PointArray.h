@@ -80,6 +80,8 @@ class PointArray : public Geometry
         int findField(const std::string& name, const TypeSpec& spec);
         int findField(const std::string& name);
 
+        void checkAttributeAndWrite(std::ofstream & out, int attributeIdx, std::string attributeName, QString fileName);
+
         friend struct ProgressFunc;
 
         /// Total number of loaded points
